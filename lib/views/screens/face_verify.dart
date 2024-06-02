@@ -44,7 +44,6 @@ class _DoorSelectionScreenState extends State<DoorSelectionScreen> {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('OpenDoorHistory')
         .orderBy('open_at', descending: true)
-        .limit(10)
         .get();
     return querySnapshot.docs.map((doc) {
       return {
@@ -191,33 +190,57 @@ class _DoorSelectionScreenState extends State<DoorSelectionScreen> {
   }
 
   Widget _buildHistorySection() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: historyData,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final history = snapshot.data![index];
-              return ListTile(
-                leading:
-                    Image.network(history['imageUrl'], width: 50, height: 50),
-                title: Text(history['user']),
-                subtitle: Text(history['date']),
-                trailing: const Icon(Icons.keyboard_arrow_right),
-                onTap: () {
-                  // Navigate to detail screen if needed
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "Open Door History",
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepOrangeAccent,
+            ),
+          ),
+        ),
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('OpenDoorHistory')
+              .orderBy('open_at', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (!snapshot.hasData) {
+              return const Text('No data available');
+            } else {
+              return ListView.builder(
+                shrinkWrap: true,
+                physics:
+                    NeverScrollableScrollPhysics(), // Prevents scrolling within the nested ListView
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  final doc = snapshot.data!.docs[index];
+                  final data = doc.data() as Map<String, dynamic>;
+                  return ListTile(
+                    leading:
+                        Image.network(data['image_url'], width: 50, height: 50),
+                    title: Text(data['user_id']),
+                    subtitle: Text(data['open_at'].toDate().toString()),
+                    trailing: const Icon(Icons.keyboard_arrow_right),
+                    onTap: () {
+                      // Navigate to detail screen if needed
+                    },
+                  );
                 },
               );
-            },
-          );
-        }
-      },
+            }
+          },
+        ),
+      ],
     );
   }
 }
