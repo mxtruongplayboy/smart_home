@@ -46,3 +46,13 @@ Here are some screenshots showcasing the UI and functionality of the app:
 </p>
 
 <p align="center">Track door opening history and notify devices in the home when someone opens the door</p>
+
+## 🎥 Video Demo
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/11phhMlD4kAGw8qFicEFRXNg-9H2tBHHb/view?usp=sharing">
+    <img src="https://github.com/user-attachments/assets/4181737d-da45-4438-9ad0-83fcf28bca18" alt="Video Demo" width="600"/>
+  </a>
+</p>
+<p align="center">Click on the image to watch the video demo</p>
+
